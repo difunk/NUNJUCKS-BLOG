@@ -1,0 +1,14 @@
+{% extends "_baseLayout.njk" %}
+
+{% block body %}
+<div class="container px-4 px-lg-5">
+  {% for post in posts %}
+    <div>
+      <h2><a href="/posts/{{ post.slug }}">{{ post.title }}</a></h2>
+      <p>{{ post.teaser }}</p>
+    </div>
+    <hr />
+  {% endfor %}
+</div>
+
+{% endblock %}

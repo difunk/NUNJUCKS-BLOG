@@ -1,0 +1,32 @@
+{
+  "name": "nunjucks-blog",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run build && node ./dist/app.js",
+    "dev": "nodemon",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bootstrap": "^5.3.7",
+    "dayjs": "^1.11.13",
+    "dotenv": "^17.1.0",
+    "express": "^5.1.0",
+    "nunjucks": "^3.2.4",
+    "slug": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.12",
+    "@types/nunjucks": "^3.2.6",
+    "@types/slug": "^5.0.9",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}

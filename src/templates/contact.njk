@@ -1,0 +1,28 @@
+{% extends "_baseLayout.njk" %}
+{% from "_macros.njk" import textInput, textarea, submitButton %}
+
+{% block body %}
+<div class="container px-4 px-lg-5">
+   <main class="mb-4">
+      <div class="container px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+               <div class="col-md-10 col-lg-8 col-xl-7">
+                  <p>Want to get in touch? Fill out the form below to send me a message and I will get back to you as soon as possible!</p>
+                  <div class="my-5">
+                        <form id="contactForm">
+                           {{ textInput("name", "Name") }}
+                           {{ textInput("email", "Email address", "email") }}
+                           {{ textInput("phone", "Phone Number", "tel") }}
+                           {{ textarea("message", "Message") }}
+                           
+                           <br />
+                           {{ submitButton("Send") }}
+                        </form>
+                  </div>
+               </div>
+            </div>
+      </div>
+   </main>
+</div>
+
+{% endblock %}

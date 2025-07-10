@@ -1,0 +1,23 @@
+{# Form Field Macros #}
+
+{# Text Input Field #}
+{% macro textInput(id, label, type="text", placeholder="", required=true) %}
+<div class="form-floating">
+    <input class="form-control" id="{{ id }}" type="{{ type }}" placeholder="{{ placeholder or 'Enter your ' + (label | lower) + '...' }}" {{ 'required' if required }} />
+    <label for="{{ id }}">{{ label }}</label>
+</div>
+{% endmacro %}
+
+{# Textarea Field #}
+{% macro textarea(id, label, placeholder="", rows="12rem", required=true) %}
+<div class="form-floating">
+    <textarea class="form-control" id="{{ id }}" placeholder="{{ placeholder or 'Enter your ' + (label | lower) + '...' }}" style="height: {{ rows }}" {{ 'required' if required }}></textarea>
+    <label for="{{ id }}">{{ label }}</label>
+</div>
+{% endmacro %}
+
+{# Submit Button #}
+{% macro submitButton(text="Send", disabled=false) %}
+<button class="btn btn-primary text-uppercase {{ 'disabled' if disabled }}" type="submit">{{ text }}</button>
+{% endmacro %}
+
