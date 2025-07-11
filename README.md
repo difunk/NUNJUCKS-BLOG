@@ -1,7 +1,6 @@
 # Template Engines with Nunjucks
 
 This project showcases the transformation of a static HTML template into a dynamic, content-driven blog platform utilizing **Express.js** and the **Nunjucks templating system**. It was created as a hands-on assignment for the **Advanced Web Development** program at **Spiced Academy (AWD25)**.
-
 The primary objective was to transform the static "Clean Blog" design and restructure it into a flexible and scalable architecture. This required decomposing the original HTML markup into reusable elements (base layouts, partials, and macros) while implementing dynamic blog post generation through a centralized JSON data file.
 
 ## Features
