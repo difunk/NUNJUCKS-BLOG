@@ -32,9 +32,12 @@
                                         <button class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">
                                             Bearbeiten
                                         </button>
-                                        <button class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors">
-                                            Löschen
-                                        </button>
+                                        <form method="POST" action="/admin/posts/delete" class="inline">
+                                            <input type="hidden" name="title" value="{{ post.title }}">
+                                            <button type="submit" class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors">
+                                                Löschen
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -64,9 +67,12 @@
                         <button class="flex-1 px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors text-center">
                             Bearbeiten
                         </button>
-                        <button class="flex-1 px-4 py-2 text-sm bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors text-center">
-                            Löschen
-                        </button>
+                        <form method="POST" action="/admin/posts/delete" class="flex-1">
+                            <input type="hidden" name="title" value="{{ post.title }}">
+                            <button type="submit" class="w-full px-4 py-2 text-sm bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors text-center">
+                                Löschen
+                            </button>
+                        </form>
                     </div>
                 </div>
                 {% endfor %}

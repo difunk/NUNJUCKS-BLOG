@@ -1,8 +1,11 @@
 import express from "express";
-import { postsListing } from "../controllers/admin/postController";
+import {
+  deletePostController,
+  postsListing,
+} from "../controllers/admin/postController";
 
 const router = express.Router();
 
-router.get("/", postsListing);
+router.get("/", postsListing).post("/posts/delete", deletePostController);
 
 export default router;
