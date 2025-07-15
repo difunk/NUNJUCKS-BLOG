@@ -1,5 +1,76 @@
 {% extends "../_layout/_adminLayout.njk" %}
 
 {% block content %}
-    <h1>Admin Dashboard<h1>
+    <div class="p-6 bg-gray-50 min-h-screen">
+        <div class="max-w-7xl mx-auto">
+            <h1 class="text-3xl font-bold text-gray-900 mb-6">{{ title }}</h1>
+            
+            <!-- Desktop: Table -->
+            <div class="hidden md:block bg-white shadow-sm rounded-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="admin-table min-w-full">
+                        <thead>
+                            <tr>
+                                <th class="whitespace-nowrap">Titel</th>
+                                <th class="whitespace-nowrap">Autor</th>
+                                <th class="whitespace-nowrap hidden lg:table-cell">Datum</th>
+                                <th class="whitespace-nowrap">Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for post in posts %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="font-medium">
+                                    <a href="/posts/{{ post.slug }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+                                        {{ post.title }}
+                                    </a>
+                                </td>
+                                <td class="text-gray-700">{{ post.author }}</td>
+                                <td class="text-gray-500 hidden lg:table-cell">{{ post.timestamp }}</td>
+                                <td>
+                                    <div class="flex space-x-2">
+                                        <button class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">
+                                            Bearbeiten
+                                        </button>
+                                        <button class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors">
+                                            Löschen
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mobile & Tablet: Cards -->
+            <div class="md:hidden space-y-4">
+                {% for post in posts %}
+                <div class="bg-white shadow-sm rounded-lg p-4 border border-gray-200">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-medium text-gray-900 truncate">
+                                <a href="/posts/{{ post.slug }}" class="text-blue-600 hover:text-blue-800">
+                                    {{ post.title }}
+                                </a>
+                            </h3>
+                            <p class="text-sm text-gray-500 mt-1">
+                                {{ post.author }} • {{ post.timestamp }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button class="flex-1 px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors text-center">
+                            Bearbeiten
+                        </button>
+                        <button class="flex-1 px-4 py-2 text-sm bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors text-center">
+                            Löschen
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
