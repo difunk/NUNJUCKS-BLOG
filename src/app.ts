@@ -3,7 +3,6 @@ require("dotenv").config();
 import express, { Request, Response } from "express";
 import nunjucks from "nunjucks";
 import path from "path";
-
 import { logger } from "./middlewares/loggerMiddleware";
 import { aboutController } from "./controllers/aboutController";
 import { homeController } from "./controllers/homeController";
@@ -18,7 +17,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 // Logger nur für dynamische Routes, nicht für statische Dateien
 app.use(logger);
 
-nunjucks.configure(path.join(__dirname, "../src/templates"), {
+nunjucks.configure(path.join(__dirname, "../src/views"), {
   autoescape: true,
   express: app,
   watch: true,

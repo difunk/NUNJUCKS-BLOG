@@ -2,18 +2,10 @@ import type { Request, Response } from "express";
 import slug from "slug";
 import posts from "../data/blogEntries.json";
 import type { BlogPost, BlogPostWithSlug } from "../types/blogPost";
+import { transformBlogEntriesData } from "../utils/transformBlogData";
 
-const postsWithSlug: BlogPostWithSlug[] = posts.map((post: BlogPost) => {
-  const titleAsSlug = slug(post.title);
-  const timestamp = new Date(post.createdAt * 1000).toLocaleDateString("de-DE");
-  return {
-    ...post,
-    slug: titleAsSlug,
-    timestamp,
-  };
-});
-
-export const postsController = (req: Request, res: Response) => {
+export const postsController = async (req: Request, res: Response) => {
+  const postsWithSlug = await transformBlogEntriesData(posts);
   const currentPost = postsWithSlug.find((post: BlogPostWithSlug) => {
     return post.slug === req.params.slug;
   });

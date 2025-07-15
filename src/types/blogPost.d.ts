@@ -7,6 +7,8 @@ export interface BlogPost {
   content: string;
 }
 
+type BlogPosts = BlogPost[];
+
 export interface BlogPostWithSlug extends BlogPost {
   slug: string;
   timestamp: string;
