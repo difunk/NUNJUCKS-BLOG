@@ -11,7 +11,7 @@ export const postsController = async (req: Request, res: Response) => {
   });
 
   if (currentPost) {
-    res.render("post.njk", {
+    res.render("_layout/post.njk", {
       title: currentPost.title,
       subtitle: currentPost.teaser,
       post: currentPost,
