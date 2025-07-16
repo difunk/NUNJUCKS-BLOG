@@ -1,8 +1,12 @@
 import type { Request, Response } from "express";
 import { getAllBlogEntries } from "../../models/blogEntriesModel";
 import { transformBlogEntriesData } from "../../utils/transformBlogData";
-import { writeFile } from "node:fs/promises";
+import { rename, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { BlogPost } from "../../types/blogPost";
+import multer from "multer";
+
+const upload = multer({ dest: "public/images/" });
 
 const FILE_PATH = path.join(__dirname, "..", "..", "data/blogEntries.json");
 
@@ -80,5 +84,55 @@ export const editPostSubmit = async (req: Request, res: Response) => {
     }
   } catch (error) {
     res.status(500).send("Fehler beim aktualsieren");
+  }
+};
+
+export const addPostController = async (req: Request, res: Response) => {
+  try {
+    res.render("admin/addPost.njk", { title: "Neuen Beitrag erstellen" });
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unbekannter Fehler";
+    res.status(500).send("Fehler beim aufrufen der Seite: " + errorMessage);
+  }
+};
+
+export const addPostSubmit = async (req: Request, res: Response) => {
+  let imagePath: string;
+
+  if (req.file) {
+    const ext = path.extname(req.file.originalname);
+    const oldPath = req.file.path;
+    const newPath = req.file.path + ext;
+
+    await rename(oldPath, newPath);
+    imagePath = req.file.filename + ext;
+  } else {
+    imagePath = "/images/default.jpg";
+  }
+
+  try {
+    const { title, author, content } = req.body;
+    const posts = await getAllBlogEntries();
+
+    const newPost: BlogPost = {
+      title,
+      image: imagePath,
+      author,
+      createdAt: Math.floor(Date.now() / 1000),
+      teaser: content.slice(0, 120),
+      content,
+    };
+
+    posts.push(newPost);
+
+    await writeFile(FILE_PATH, JSON.stringify(posts, null, 2), {
+      encoding: "utf-8",
+    });
+    res.redirect("/admin");
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unbekannter Fehler";
+    res.status(500).send("Fehler beim hinzufügen: " + errorMessage);
   }
 };
