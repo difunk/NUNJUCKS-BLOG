@@ -5,6 +5,7 @@ import { rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { BlogPost } from "../../types/blogPost";
 import multer from "multer";
+import sanitizeHtml from "sanitize-html";
 
 const upload = multer({ dest: "public/images/" });
 
@@ -113,6 +114,7 @@ export const addPostSubmit = async (req: Request, res: Response) => {
 
   try {
     const { title, author, content } = req.body;
+    const cleanContent = sanitizeHtml(content);
     const posts = await getAllBlogEntries();
 
     const newPost: BlogPost = {
@@ -120,8 +122,8 @@ export const addPostSubmit = async (req: Request, res: Response) => {
       image: imagePath,
       author,
       createdAt: Math.floor(Date.now() / 1000),
-      teaser: content.slice(0, 120),
-      content,
+      teaser: cleanContent.slice(0, 120),
+      content: cleanContent || "",
     };
 
     posts.push(newPost);

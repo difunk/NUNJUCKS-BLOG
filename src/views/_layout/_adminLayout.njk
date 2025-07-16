@@ -5,10 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ title }}</title>
     <link rel="stylesheet" href="/admin.css">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
   </head>
   <body style="margin: 0; padding: 0;">
     {% block content %}
     
     {% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script>
+      const quill = new Quill('#editor', { theme: 'snow' });
+      document.querySelector('form').onsubmit = function() {
+        document.getElementById('content-input').value = quill.root.innerHTML;
+      };
+    </script>
   </body>
 </html>
