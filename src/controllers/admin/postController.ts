@@ -28,23 +28,57 @@ async function deletePost(title: string) {
 
 export const deletePostController = async (req: Request, res: Response) => {
   try {
-    console.log("🔥 DELETE REQUEST RECEIVED");
-    console.log("📝 req.body:", req.body);
-
     const { title } = req.body;
-    console.log("🎯 Title to delete:", title);
 
     if (!title) {
       throw new Error("Kein Titel empfangen!");
     }
 
     await deletePost(title);
-    console.log("✅ Post deleted successfully");
     res.redirect("/admin");
   } catch (error: unknown) {
-    console.error("❌ Delete error:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Unbekannter Fehler";
     res.status(500).send("Fehler beim Löschen: " + errorMessage);
+  }
+};
+
+export const editPostForm = async (req: Request, res: Response) => {
+  try {
+    const postId = req.params.id;
+    const posts = await getAllBlogEntries();
+    const postsWithSlug = transformBlogEntriesData(posts);
+    const post = postsWithSlug.find((postToEdit) => postToEdit.slug === postId);
+
+    res.render("admin/editPost.njk", { title: "Beitrag bearbeiten", post });
+  } catch (error) {}
+};
+
+function getSlug(title: string) {
+  return title
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-]/g, "");
+}
+
+export const editPostSubmit = async (req: Request, res: Response) => {
+  try {
+    const { title, author, content } = req.body;
+    const postId = req.params.id;
+    const posts = await getAllBlogEntries();
+    const post = posts.find((p) => getSlug(p.title) === postId);
+
+    if (post) {
+      post.title = title;
+      post.author = author;
+      post.content = content;
+      const convertedPosts = JSON.stringify(posts, null, 2);
+      await writeFile(FILE_PATH, convertedPosts, { encoding: "utf-8" });
+      res.redirect("/admin");
+    } else {
+      res.status(404).send("Post nicht gefunden");
+    }
+  } catch (error) {
+    res.status(500).send("Fehler beim aktualsieren");
   }
 };
