@@ -8,7 +8,7 @@ const router = express.Router();
 
 router
   .get("/", homeController)
-  .get("/posts/:slug", postsController)
+  .get("/posts/:id", postsController)
   .get("/contact", contactController)
   .get("/about", aboutController);
 

@@ -1,24 +1,15 @@
 import type { Request, Response } from "express";
-import slug from "slug";
-import posts from "../data/blogEntries.json";
-import type { BlogPost, BlogPostWithSlug } from "../types/blogPost";
-import { transformBlogEntriesData } from "../utils/transformBlogData";
+import { getDB } from "../db/database";
 
 export const postsController = async (req: Request, res: Response) => {
-  const postsWithSlug = await transformBlogEntriesData(posts);
-  const currentPost = postsWithSlug.find((post: BlogPostWithSlug) => {
-    return post.slug === req.params.slug;
-  });
+  const db = getDB();
+  const id = req.params.id;
+  const sql = "SELECT * FROM blog_entries WHERE id = ?";
 
-  if (currentPost) {
-    res.render("_layout/post.njk", {
-      title: currentPost.title,
-      subtitle: currentPost.teaser,
-      post: currentPost,
-      image: `/images/${currentPost.image}`,
-      timestamp: currentPost.timestamp,
-    });
-  } else {
-    res.status(404).send("Post nicht gefunden");
-  }
+  db.get(sql, [id], (error, post) => {
+    if (error || !post) {
+      return res.status(404).send("Post nicht gefunden");
+    }
+    res.render("_layout/post.njk", { post });
+  });
 };

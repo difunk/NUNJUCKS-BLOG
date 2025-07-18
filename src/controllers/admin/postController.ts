@@ -122,30 +122,27 @@ export const addPostSubmit = async (req: Request, res: Response) => {
     imagePath = "/images/default.jpg";
   }
 
+  const db = getDB();
+  const sql = `INSERT INTO blog_entries (title, image, author, createdAt, teaser, content) VALUES (?, ?, ?, ?, ?, ?)`;
+  const id = req.params.id;
+  const { title, author, content } = req.body;
+  const cleanContent = sanitizeHtml(content);
+  const teaser = cleanContent.slice(0, 120);
+  const createdAt = Math.floor(Date.now() / 1000);
+
   try {
-    const { title, author, content } = req.body;
-    const cleanContent = sanitizeHtml(content);
-    const posts = await getAllBlogEntries();
-
-    const newPost: BlogPost = {
-      id: Math.floor(Date.now() / 1000),
-      title,
-      image: imagePath,
-      author,
-      createdAt: Math.floor(Date.now() / 1000),
-      teaser: cleanContent.slice(0, 120),
-      content: cleanContent || "",
-    };
-
-    posts.push(newPost);
-
-    await writeFile(FILE_PATH, JSON.stringify(posts, null, 2), {
-      encoding: "utf-8",
+    await new Promise<void>((resolve, reject) => {
+      db.run(
+        sql,
+        [title, imagePath, author, createdAt, teaser, cleanContent],
+        (error: Error | null) => {
+          if (error) reject(error);
+          else resolve();
+        },
+      );
     });
     res.redirect("/admin");
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unbekannter Fehler";
-    res.status(500).send("Fehler beim hinzufügen: " + errorMessage);
+    res.status(500).send("Fehler beim aktualsieren");
   }
 };
