@@ -22,16 +22,6 @@ export const postsListing = async (req: Request, res: Response) => {
   });
 };
 
-// async function deletePost(title: string) {
-//   const posts = await getAllBlogEntries();
-//   const filteredPosts = posts.filter((post) => {
-//     return post.title !== title;
-//   });
-
-//   const convertedPosts = JSON.stringify(filteredPosts, null, 2);
-//   await writeFile(FILE_PATH, convertedPosts, { encoding: "utf-8" });
-// }
-
 async function deletePost(id: number): Promise<void> {
   const db = getDB();
   const sql = `DELETE FROM blog_entries WHERE id = ?`;
@@ -65,14 +55,40 @@ export const deletePostController = async (req: Request, res: Response) => {
 };
 
 export const editPostForm = async (req: Request, res: Response) => {
-  try {
-    const postId = req.params.id;
-    const posts = await getAllBlogEntries();
-    const postsWithSlug = transformBlogEntriesData(posts);
-    const post = postsWithSlug.find((postToEdit) => postToEdit.slug === postId);
+  const db = getDB();
+  const sql = `SELECT * FROM blog_entries WHERE id = ?`;
+  const id = req.params.id;
 
-    res.render("admin/editPost.njk", { title: "Beitrag bearbeiten", post });
-  } catch (error) {}
+  const post = await new Promise<BlogPost>((resolve, reject) => {
+    db.get(sql, [id], (error: Error | null, rowData: BlogPost) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(rowData);
+      }
+    });
+  });
+
+  res.render("admin/editPost.njk", { title: "Beitrag bearbeiten", post });
+};
+
+export const editPostSubmit = async (req: Request, res: Response) => {
+  const db = getDB();
+  const sql = `UPDATE blog_entries SET title = ?, author = ?, content = ? WHERE id = ?`;
+  const id = req.params.id;
+  const { title, author, content } = req.body;
+
+  try {
+    await new Promise<void>((resolve, reject) => {
+      db.run(sql, [title, author, content, id], (error: Error | null) => {
+        if (error) reject(error);
+        else resolve();
+      });
+    });
+    res.redirect("/admin");
+  } catch (error) {
+    res.status(500).send("Fehler beim aktualsieren");
+  }
 };
 
 function getSlug(title: string) {
@@ -81,28 +97,6 @@ function getSlug(title: string) {
     .replace(/\s+/g, "-")
     .replace(/[^a-z0-9\-]/g, "");
 }
-
-export const editPostSubmit = async (req: Request, res: Response) => {
-  try {
-    const { title, author, content } = req.body;
-    const postId = req.params.id;
-    const posts = await getAllBlogEntries();
-    const post = posts.find((p) => getSlug(p.title) === postId);
-
-    if (post) {
-      post.title = title;
-      post.author = author;
-      post.content = content;
-      const convertedPosts = JSON.stringify(posts, null, 2);
-      await writeFile(FILE_PATH, convertedPosts, { encoding: "utf-8" });
-      res.redirect("/admin");
-    } else {
-      res.status(404).send("Post nicht gefunden");
-    }
-  } catch (error) {
-    res.status(500).send("Fehler beim aktualsieren");
-  }
-};
 
 export const addPostController = async (req: Request, res: Response) => {
   try {
