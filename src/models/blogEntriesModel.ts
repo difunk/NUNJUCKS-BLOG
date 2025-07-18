@@ -1,20 +1,23 @@
 import { readFile } from "node:fs/promises";
 import * as path from "node:path";
 import { BlogPost, BlogPosts, BlogPostWithSlug } from "../types/blogPost";
-
-const FILE_PATH = path.join(__dirname, "..", "data/blogEntries.json");
+import { getDB } from "../db/database";
+import { error } from "node:console";
 
 export async function getAllBlogEntries(): Promise<BlogPosts> {
-  console.log(FILE_PATH, "../data/blogEntries.json");
-  try {
-    const blogEntries = await readFile(FILE_PATH, { encoding: "utf8" });
+  const db = getDB();
 
-    if (blogEntries.length === 0) {
-      return [];
-    } else {
-      return JSON.parse(blogEntries);
-    }
-  } catch (error) {
-    return [];
-  }
+  return new Promise((resolve, reject) => {
+    db.all<BlogPost>(
+      `SELECT * FROM blog_entries`,
+      [],
+      (error: Error | null, rowData: BlogPosts) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(rowData);
+        }
+      },
+    );
+  });
 }

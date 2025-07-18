@@ -6,6 +6,7 @@ import path from "node:path";
 import { BlogPost } from "../../types/blogPost";
 import multer from "multer";
 import sanitizeHtml from "sanitize-html";
+import { getDB } from "../../db/database";
 
 const upload = multer({ dest: "public/images/" });
 
@@ -21,25 +22,40 @@ export const postsListing = async (req: Request, res: Response) => {
   });
 };
 
-async function deletePost(title: string) {
-  const posts = await getAllBlogEntries();
-  const filteredPosts = posts.filter((post) => {
-    return post.title !== title;
-  });
+// async function deletePost(title: string) {
+//   const posts = await getAllBlogEntries();
+//   const filteredPosts = posts.filter((post) => {
+//     return post.title !== title;
+//   });
 
-  const convertedPosts = JSON.stringify(filteredPosts, null, 2);
-  await writeFile(FILE_PATH, convertedPosts, { encoding: "utf-8" });
+//   const convertedPosts = JSON.stringify(filteredPosts, null, 2);
+//   await writeFile(FILE_PATH, convertedPosts, { encoding: "utf-8" });
+// }
+
+async function deletePost(id: number): Promise<void> {
+  const db = getDB();
+  const sql = `DELETE FROM blog_entries WHERE id = ?`;
+
+  return new Promise((resolve, reject) => {
+    db.run(sql, [id], (error: Error | null) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
 }
 
 export const deletePostController = async (req: Request, res: Response) => {
   try {
-    const { title } = req.body;
+    const { id } = req.body;
 
-    if (!title) {
-      throw new Error("Kein Titel empfangen!");
+    if (!id) {
+      throw new Error("Keine ID empfangen!");
     }
 
-    await deletePost(title);
+    await deletePost(id);
     res.redirect("/admin");
   } catch (error: unknown) {
     const errorMessage =
@@ -118,6 +134,7 @@ export const addPostSubmit = async (req: Request, res: Response) => {
     const posts = await getAllBlogEntries();
 
     const newPost: BlogPost = {
+      id: Math.floor(Date.now() / 1000),
       title,
       image: imagePath,
       author,
